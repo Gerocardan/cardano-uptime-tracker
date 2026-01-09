@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Cardano brand colors as CSS variables */
+:root {
+  --cardano-blue: #0033AD;
+  --cardano-light: #0A1A2F;
+  --cardano-dark: #000814;
+  --uptime-green: #10B981;
+}
+
+body {
+  background-color: var(--cardano-dark);
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}

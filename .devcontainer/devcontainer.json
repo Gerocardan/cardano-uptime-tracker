@@ -1,0 +1,19 @@
+{
+	"name": "Cardano Uptime Tracker",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	},
+	"runArgs": [
+		"--name",
+		"Cardano Uptime Tracker"
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"kilocode.kilo-code"
+			]
+		}
+	}
+}
