@@ -16,28 +16,58 @@ function dateToYearFraction(date: Date): number {
   return year + (date.getTime() - startOfYear) / yearLength
 }
 
+import React, { useEffect, useState } from 'react'
+
 export default function UptimeChart() {
-  const now = new Date()
-  const genesisYearFraction = dateToYearFraction(BYRON_GENESIS_DATE)
-  const nowYearFraction = dateToYearFraction(now)
+  interface ChartDataPoint {
+    yearFraction: number
+    uptimePercent: number
+  }
 
-  // Build data points: mostly 100%, with sharp dips to 0% at event times (approximate)
-  const data: ChartDataPoint[] = [
-    { yearFraction: genesisYearFraction, uptimePercent: 100 },
-  ]
+  function dateToYearFraction(date: Date): number {
+    const year = date.getUTCFullYear()
+    const startOfYear = Date.UTC(year, 0, 1)
+    const endOfYear = Date.UTC(year + 1, 0, 1)
+    const yearLength = endOfYear - startOfYear
+    return year + (date.getTime() - startOfYear) / yearLength
+  }
 
-  NETWORK_EVENTS.forEach(event => {
-    const eventYearFraction = dateToYearFraction(event.date)
-    // Add a dip point just before event
-    data.push({ yearFraction: eventYearFraction - 0.0001, uptimePercent: 100 })
-    // Dip to 0% during event
-    data.push({ yearFraction: eventYearFraction, uptimePercent: 0 })
-    // Back to 100% just after event
-    data.push({ yearFraction: eventYearFraction + 0.0001, uptimePercent: 100 })
-  })
+  const [data, setData] = useState<ChartDataPoint[]>([])
 
-  // Add current time point
-  data.push({ yearFraction: nowYearFraction, uptimePercent: 100 })
+  useEffect(() => {
+    let intervalId: number
+
+    async function fetchUptimeData() {
+      try {
+        // Example API endpoint - replace with actual cexplorer API URL
+        const response = await fetch('https://cexplorer.io/api/uptime')
+        const json = await response.json()
+
+        // Process json to build data array of { yearFraction, uptimePercent }
+        // This is a placeholder; adapt based on actual API response structure
+        const processedData: ChartDataPoint[] = json.map((item: any) => ({
+          yearFraction: dateToYearFraction(new Date(item.date)),
+          uptimePercent: item.uptimePercent,
+        }))
+
+        setData(processedData)
+      } catch (error) {
+        console.error('Failed to fetch uptime data:', error)
+      }
+    }
+
+    fetchUptimeData()
+    intervalId = window.setInterval(fetchUptimeData, 10000) // fetch every 10 seconds
+
+    return () => clearInterval(intervalId)
+  }, [])
+
+  if (data.length === 0) {
+    return <div className="text-gray-400">Loading uptime chart...</div>
+  }
+
+  const genesisYearFraction = dateToYearFraction(new Date('2017-09-29T21:00:00Z'))
+  const nowYearFraction = dateToYearFraction(new Date())
 
   return (
     <div className="w-full h-48 my-6">
