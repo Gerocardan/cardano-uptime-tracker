@@ -1,17 +1,15 @@
-FROM node:20-alpine AS builder
+FROM node:20 AS builder
 
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-
-# Remove vite.config.ts to avoid build errors
-RUN rm -f vite.config.ts
+RUN apt-get update && apt-get install -y bash libc6-dev make g++ python3 git
+COPY package*.json tsconfig.json ./
+RUN npm install --include=dev
 
 COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:20 AS runner
 WORKDIR /app
 
 ENV NODE_ENV production

@@ -18,7 +18,7 @@ This is a modern Next.js 14+ application tracking Cardano network uptime since t
 ## Project Structure
 
 ```
-cardano-uptime-tracker-next/
+cardano-uptime-tracker/
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx
